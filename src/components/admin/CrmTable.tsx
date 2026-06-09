@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Lead, LeadStatus } from "@/lib/store";
+import { updateLeadStatus, type Lead, type LeadStatus } from "@/lib/clientStore";
 import { Whatsapp } from "@/components/icons";
 
 const STATUSES: LeadStatus[] = ["nuevo", "contactado", "negociando", "cerrado", "perdido"];
@@ -37,13 +37,9 @@ export default function CrmTable({ initial }: { initial: Lead[] }) {
     [leads, filter, source],
   );
 
-  const setStatus = async (id: string, status: LeadStatus) => {
+  const setStatus = (id: string, status: LeadStatus) => {
     setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, status } : l)));
-    await fetch("/api/leads", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, status }),
-    });
+    updateLeadStatus(id, status);
   };
 
   return (

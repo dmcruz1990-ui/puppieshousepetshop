@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { whatsappLink, formatCOP } from "@/data/site";
 import { sizeLabel, statusLabel, type Product } from "@/data/products";
+import { addLead } from "@/lib/clientStore";
+import { asset } from "@/lib/asset";
 import { Paw, Whatsapp } from "./icons";
 
 const statusStyles: Record<Product["status"], string> = {
@@ -11,19 +13,15 @@ const statusStyles: Record<Product["status"], string> = {
   vendido: "text-rose-700",
 };
 
-async function trackLead(p: Product) {
+function trackLead(p: Product) {
   try {
-    await fetch("/api/leads", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        source: "whatsapp",
-        productId: p.id,
-        productName: p.name,
-        name: "Interesado web",
-        phone: "—",
-        message: `Reservar ${p.name}`,
-      }),
+    addLead({
+      source: "whatsapp",
+      productId: p.id,
+      productName: p.name,
+      name: "Interesado web",
+      phone: "—",
+      message: `Reservar ${p.name}`,
     });
   } catch {
     /* la versión de prueba no debe romperse si falla el registro */
@@ -48,7 +46,7 @@ export default function ProductCard({ product, layout = "grid" }: { product: Pro
     return (
       <article className="flex gap-4 rounded-2xl border border-brand-100 bg-white p-3 shadow-sm hover:shadow-md transition">
         <div className="relative h-28 w-32 shrink-0 overflow-hidden rounded-xl bg-brand-50">
-          <img src={src} onError={() => setSrc("/placeholder-dog.svg")} alt={product.name} className="h-full w-full object-cover" loading="lazy" />
+          <img src={src} onError={() => setSrc(asset("/placeholder-dog.svg"))} alt={product.name} className="h-full w-full object-cover" loading="lazy" />
         </div>
         <div className="flex flex-1 flex-col">
           <div className="flex items-center gap-2">
@@ -73,7 +71,7 @@ export default function ProductCard({ product, layout = "grid" }: { product: Pro
       <div className="relative aspect-[4/3] overflow-hidden bg-brand-50">
         <img
           src={src}
-          onError={() => setSrc("/placeholder-dog.svg")}
+          onError={() => setSrc(asset("/placeholder-dog.svg"))}
           alt={product.name}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           loading="lazy"

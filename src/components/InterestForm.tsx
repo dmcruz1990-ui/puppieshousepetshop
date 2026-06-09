@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { addLead } from "@/lib/clientStore";
 import { Heart, Check } from "./icons";
 
 export default function InterestForm() {
@@ -12,15 +13,11 @@ export default function InterestForm() {
     e.preventDefault();
     setLoading(true);
     try {
-      await fetch("/api/leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, source: "formulario" }),
-      });
-      setDone(true);
+      addLead({ ...form, source: "formulario" });
     } catch {
-      setDone(true);
+      /* demo: no romper si falla */
     } finally {
+      setDone(true);
       setLoading(false);
     }
   };

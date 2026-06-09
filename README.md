@@ -4,6 +4,17 @@ La plataforma de venta de cachorros — **landing pública + panel administrativ
 
 > Versión de prueba (MVP). Funciona **100% con datos semilla**, sin necesidad de base de datos. Lista para conectar Supabase y desplegar en Vercel cuando se desee.
 
+## 🌍 Demo en vivo (GitHub Pages)
+
+**https://dmcruz1990-ui.github.io/puppieshousepetshop/**
+
+Se publica automáticamente con GitHub Actions en cada push (workflow en `.github/workflows/deploy.yml`).
+
+> ⚠️ **Demo estática:** GitHub Pages no tiene servidor, así que esta versión corre 100% en el
+> navegador. Los leads se guardan en `localStorage` (por navegador) y el login del panel es solo
+> de fachada (contraseña demo `puppies2026`). Para un panel **real y seguro** con datos
+> compartidos entre dispositivos se necesita Vercel + Supabase (siguiente fase).
+
 ---
 
 ## ✨ Qué incluye
@@ -42,9 +53,7 @@ npm run build && npm run start
 
 ## ⚙️ Configuración
 
-Copia `.env.example` a `.env.local` y ajusta:
-
-- `ADMIN_PASSWORD` — contraseña del panel `/admin`
+- Contraseña demo del panel `/admin`: `puppies2026` (definida en `src/lib/clientStore.ts`).
 
 Edita los datos del negocio (nombre, **número de WhatsApp**, ciudad) en
 [`src/data/site.ts`](src/data/site.ts) y el catálogo en
@@ -57,9 +66,10 @@ Edita los datos del negocio (nombre, **número de WhatsApp**, ciudad) en
 
 ## 🧱 Stack
 
-- **Next.js 15** (App Router) + **React 19** + **TypeScript**
+- **Next.js 15** (App Router, export estático) + **React 19** + **TypeScript**
 - **Tailwind CSS** — paleta café/crema del diseño oficial
-- Capa de datos en memoria (`src/lib/store.ts`), **intercambiable por Supabase**
+- Capa de datos en el navegador (`src/lib/clientStore.ts`), **intercambiable por Supabase**
+- Despliegue automático a **GitHub Pages** vía GitHub Actions
 
 ## 🗺️ Próximos pasos (cuando se apruebe)
 

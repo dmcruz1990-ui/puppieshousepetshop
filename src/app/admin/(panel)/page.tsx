@@ -1,8 +1,9 @@
-import { getDashboard, getSales, getLeads } from "@/lib/store";
+"use client";
+
+import { useEffect, useState } from "react";
+import { getDashboard, getSales, getLeads, type Lead, type Sale } from "@/lib/clientStore";
 import { formatCOP } from "@/data/site";
 import { PageHeader, StatCard, BarChart } from "@/components/admin/ui";
-
-export const dynamic = "force-dynamic";
 
 const leadStatusStyles: Record<string, string> = {
   nuevo: "bg-blue-100 text-blue-700",
@@ -12,10 +13,20 @@ const leadStatusStyles: Record<string, string> = {
   perdido: "bg-rose-100 text-rose-700",
 };
 
+type Data = ReturnType<typeof getDashboard>;
+
 export default function Dashboard() {
-  const d = getDashboard();
-  const sales = getSales().slice(0, 5);
-  const leads = getLeads().slice(0, 5);
+  const [d, setD] = useState<Data | null>(null);
+  const [sales, setSales] = useState<Sale[]>([]);
+  const [leads, setLeads] = useState<Lead[]>([]);
+
+  useEffect(() => {
+    setD(getDashboard());
+    setSales(getSales().slice(0, 5));
+    setLeads(getLeads().slice(0, 5));
+  }, []);
+
+  if (!d) return <div className="p-10 text-brand-400">Cargando…</div>;
 
   return (
     <div>
@@ -36,7 +47,6 @@ export default function Dashboard() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Ventas recientes */}
           <div className="rounded-2xl border border-brand-100 bg-white p-5">
             <h2 className="font-serif text-lg font-bold text-brand-900">Ventas recientes</h2>
             <ul className="mt-4 divide-y divide-brand-50">
@@ -52,7 +62,6 @@ export default function Dashboard() {
             </ul>
           </div>
 
-          {/* Leads recientes */}
           <div className="rounded-2xl border border-brand-100 bg-white p-5">
             <h2 className="font-serif text-lg font-bold text-brand-900">Leads recientes</h2>
             <ul className="mt-4 divide-y divide-brand-50">

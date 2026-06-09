@@ -1,5 +1,5 @@
-// Almacén en memoria para la versión de prueba (sin base de datos).
-// Persiste mientras la instancia esté activa. En producción se reemplaza por Supabase.
+// Capa de datos del lado del navegador (versión estática para GitHub Pages).
+// Los leads se guardan en localStorage. Reemplaza al backend en esta demo.
 import { products, type Product } from "@/data/products";
 
 export type LeadSource = "whatsapp" | "formulario";
@@ -28,13 +28,8 @@ export type Sale = {
   date: string;
 };
 
-type DB = {
-  leads: Lead[];
-  sales: Sale[];
-};
-
-// Usamos globalThis para sobrevivir al hot-reload de Next en dev.
-const g = globalThis as unknown as { __puppiesDB?: DB };
+const LEADS_KEY = "phps_leads";
+const AUTH_KEY = "phps_admin";
 
 function daysAgo(n: number) {
   const d = new Date();
@@ -42,8 +37,18 @@ function daysAgo(n: number) {
   return d.toISOString();
 }
 
-function seed(): DB {
-  const find = (id: string) => products.find((p) => p.id === id)!;
+function seedLeads(): Lead[] {
+  return [
+    { id: "l1", name: "Valeria Martínez", phone: "+57 300 123 4567", source: "whatsapp", productId: "golden-retriever", productName: "Golden Retriever", status: "negociando", message: "¿Sigue disponible el Golden?", createdAt: daysAgo(0) },
+    { id: "l2", name: "Diego Fernández", phone: "+57 301 765 4321", email: "diego@email.com", source: "formulario", status: "nuevo", message: "Quiero info de cachorros pequeños", createdAt: daysAgo(0) },
+    { id: "l3", name: "Natalia Gómez", phone: "+57 312 987 6543", source: "whatsapp", productId: "husky-siberiano", productName: "Husky Siberiano", status: "contactado", createdAt: daysAgo(1) },
+    { id: "l4", name: "José Eduardo", phone: "+57 320 111 2233", source: "whatsapp", productId: "bulldog-frances", productName: "Bulldog Francés", status: "nuevo", createdAt: daysAgo(1) },
+    { id: "l5", name: "Laura Valentina", phone: "+57 315 444 5566", email: "lauv@email.com", source: "formulario", status: "cerrado", createdAt: daysAgo(3) },
+    { id: "l6", name: "Andrés Torres", phone: "+57 318 222 9988", source: "whatsapp", productId: "caniche-toy", productName: "Caniche Toy", status: "negociando", createdAt: daysAgo(4) },
+  ];
+}
+
+export function getSales(): Sale[] {
   const sales: Sale[] = [
     { id: "s1", productId: "pug", productName: "Pug (Carlino)", price: 4000000, buyerName: "Laura Ramírez", channel: "whatsapp", date: daysAgo(2) },
     { id: "s2", productId: "chihuahua", productName: "Chihuahua", price: 2500000, buyerName: "David Vanegas", channel: "whatsapp", date: daysAgo(5) },
@@ -52,25 +57,36 @@ function seed(): DB {
     { id: "s5", productId: "labrador-retriever", productName: "Labrador Retriever", price: 3100000, buyerName: "María Catalina", channel: "whatsapp", date: daysAgo(21) },
     { id: "s6", productId: "pomerania", productName: "Pomerania", price: 4200000, buyerName: "Juan Camilo", channel: "directo", date: daysAgo(28) },
   ];
-  const leads: Lead[] = [
-    { id: "l1", name: "Valeria Martínez", phone: "+57 300 123 4567", source: "whatsapp", productId: "golden-retriever", productName: "Golden Retriever", status: "negociando", message: "¿Sigue disponible el Golden?", createdAt: daysAgo(0) },
-    { id: "l2", name: "Diego Fernández", phone: "+57 301 765 4321", email: "diego@email.com", source: "formulario", status: "nuevo", message: "Quiero info de cachorros pequeños", createdAt: daysAgo(0) },
-    { id: "l3", name: "Natalia Gómez", phone: "+57 312 987 6543", source: "whatsapp", productId: "husky-siberiano", productName: "Husky Siberiano", status: "contactado", createdAt: daysAgo(1) },
-    { id: "l4", name: "José Eduardo", phone: "+57 320 111 2233", source: "whatsapp", productId: "bulldog-frances", productName: "Bulldog Francés", status: "nuevo", createdAt: daysAgo(1) },
-    { id: "l5", name: "Laura Valentina", phone: "+57 315 444 5566", email: "lauv@email.com", source: "formulario", status: "cerrado", createdAt: daysAgo(3) },
-    { id: "l6", name: "Andrés Torres", phone: "+57 318 222 9988", source: "whatsapp", productId: "caniche-toy", productName: "Caniche Toy", status: "negociando", createdAt: daysAgo(4) },
-  ];
-  return { leads, sales };
+  return sales.sort((a, b) => b.date.localeCompare(a.date));
 }
 
-function db(): DB {
-  if (!g.__puppiesDB) g.__puppiesDB = seed();
-  return g.__puppiesDB;
+// ---- Leads (localStorage) ----
+function readLeads(): Lead[] {
+  if (typeof window === "undefined") return seedLeads();
+  try {
+    const raw = window.localStorage.getItem(LEADS_KEY);
+    if (!raw) {
+      const seed = seedLeads();
+      window.localStorage.setItem(LEADS_KEY, JSON.stringify(seed));
+      return seed;
+    }
+    return JSON.parse(raw) as Lead[];
+  } catch {
+    return seedLeads();
+  }
 }
 
-// ---- Leads ----
+function writeLeads(leads: Lead[]) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(LEADS_KEY, JSON.stringify(leads));
+  } catch {
+    /* noop */
+  }
+}
+
 export function getLeads(): Lead[] {
-  return [...db().leads].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  return [...readLeads()].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
 export function addLead(input: Omit<Lead, "id" | "createdAt" | "status"> & { status?: LeadStatus }): Lead {
@@ -80,29 +96,28 @@ export function addLead(input: Omit<Lead, "id" | "createdAt" | "status"> & { sta
     status: input.status ?? "nuevo",
     createdAt: new Date().toISOString(),
   };
-  db().leads.unshift(lead);
+  const leads = readLeads();
+  leads.unshift(lead);
+  writeLeads(leads);
   return lead;
 }
 
 export function updateLeadStatus(id: string, status: LeadStatus): Lead | null {
-  const lead = db().leads.find((l) => l.id === id);
+  const leads = readLeads();
+  const lead = leads.find((l) => l.id === id);
   if (!lead) return null;
   lead.status = status;
+  writeLeads(leads);
   return lead;
 }
 
-// ---- Ventas ----
-export function getSales(): Sale[] {
-  return [...db().sales].sort((a, b) => b.date.localeCompare(a.date));
-}
-
-// ---- Inventario (derivado del catálogo) ----
+// ---- Inventario ----
 export type InventoryRow = Product & { value: number };
 export function getInventory(): InventoryRow[] {
   return products.map((p) => ({ ...p, value: p.price * p.stock }));
 }
 
-// ---- Métricas para el dashboard ----
+// ---- Dashboard ----
 export function getDashboard() {
   const sales = getSales();
   const leads = getLeads();
@@ -119,7 +134,6 @@ export function getDashboard() {
   const newLeads = leads.filter((l) => l.status === "nuevo").length;
   const openLeads = leads.filter((l) => l.status !== "cerrado" && l.status !== "perdido").length;
 
-  // Ventas por mes (últimos 6 meses) para el gráfico
   const byMonth: { label: string; total: number }[] = [];
   for (let i = 5; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
@@ -143,4 +157,22 @@ export function getDashboard() {
     leadsCount: leads.length,
     byMonth,
   };
+}
+
+// ---- Auth (demo, solo de fachada en el navegador) ----
+const ADMIN_PASSWORD = "puppies2026";
+
+export function signIn(password: string): boolean {
+  if (password !== ADMIN_PASSWORD) return false;
+  if (typeof window !== "undefined") window.localStorage.setItem(AUTH_KEY, "1");
+  return true;
+}
+
+export function signOut() {
+  if (typeof window !== "undefined") window.localStorage.removeItem(AUTH_KEY);
+}
+
+export function isAuthed(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.localStorage.getItem(AUTH_KEY) === "1";
 }

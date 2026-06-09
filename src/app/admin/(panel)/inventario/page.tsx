@@ -1,9 +1,7 @@
-import { getInventory } from "@/lib/store";
+import { getInventory } from "@/lib/clientStore";
 import { formatCOP } from "@/data/site";
 import { sizeLabel, statusLabel } from "@/data/products";
 import { PageHeader, StatCard } from "@/components/admin/ui";
-
-export const dynamic = "force-dynamic";
 
 const statusStyles: Record<string, string> = {
   disponible: "bg-emerald-100 text-emerald-700",

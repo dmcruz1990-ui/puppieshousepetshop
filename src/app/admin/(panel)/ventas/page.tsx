@@ -1,8 +1,6 @@
-import { getSales } from "@/lib/store";
+import { getSales } from "@/lib/clientStore";
 import { formatCOP } from "@/data/site";
 import { PageHeader, StatCard } from "@/components/admin/ui";
-
-export const dynamic = "force-dynamic";
 
 export default function VentasPage() {
   const sales = getSales();

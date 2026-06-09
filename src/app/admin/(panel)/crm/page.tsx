@@ -1,11 +1,19 @@
-import { getLeads } from "@/lib/store";
+"use client";
+
+import { useEffect, useState } from "react";
+import { getLeads, type Lead } from "@/lib/clientStore";
 import { PageHeader, StatCard } from "@/components/admin/ui";
 import CrmTable from "@/components/admin/CrmTable";
 
-export const dynamic = "force-dynamic";
-
 export default function CrmPage() {
-  const leads = getLeads();
+  const [leads, setLeads] = useState<Lead[] | null>(null);
+
+  useEffect(() => {
+    setLeads(getLeads());
+  }, []);
+
+  if (!leads) return <div className="p-10 text-brand-400">Cargando…</div>;
+
   const nuevos = leads.filter((l) => l.status === "nuevo").length;
   const negociando = leads.filter((l) => l.status === "negociando").length;
   const cerrados = leads.filter((l) => l.status === "cerrado").length;

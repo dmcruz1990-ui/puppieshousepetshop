@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Paw } from "@/components/icons";
 import { site } from "@/data/site";
+import { signOut } from "@/lib/clientStore";
 
 const nav = [
   { href: "/admin", label: "Dashboard", icon: "M3 12l9-9 9 9M5 10v10h14V10" },
@@ -16,10 +17,9 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const logout = async () => {
-    await fetch("/api/admin/logout", { method: "POST" });
+  const logout = () => {
+    signOut();
     router.push("/admin/login");
-    router.refresh();
   };
 
   return (
