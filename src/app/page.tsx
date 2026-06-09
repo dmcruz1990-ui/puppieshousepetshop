@@ -13,17 +13,17 @@ export default function Home() {
 
       {/* HERO */}
       <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 pt-14 pb-6 text-center">
-          <p className="font-semibold uppercase tracking-[0.2em] text-brand-500 text-sm">
+        <div className="mx-auto max-w-7xl px-4 pt-10 pb-6 text-center sm:pt-14">
+          <p className="font-semibold uppercase tracking-[0.2em] text-brand-500 text-xs sm:text-sm">
             Nuestros Cachorros
           </p>
-          <h1 className="mt-2 font-serif text-6xl sm:text-7xl font-bold text-brand-950">
+          <h1 className="mt-2 font-serif text-5xl sm:text-7xl font-bold text-brand-950">
             Catálogo
           </h1>
           <div className="mt-3 flex justify-center text-brand-400">
             <Paw className="w-6 h-6" />
           </div>
-          <p className="mx-auto mt-3 max-w-2xl text-lg text-brand-600 text-balance">
+          <p className="mx-auto mt-3 max-w-2xl text-base sm:text-lg text-brand-600 text-balance">
             Cachorros de raza pura, sanos y criados con amor. Disponibles para reservar.
             ¡Encuentra tu compañero ideal!
           </p>

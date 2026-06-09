@@ -11,8 +11,8 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-40">
       {bannerOpen && (
-        <div className="bg-brand-900 text-brand-50 text-sm">
-          <div className="mx-auto max-w-7xl px-4 py-2.5 flex items-center justify-center gap-2 text-center">
+        <div className="bg-brand-900 text-brand-50 text-xs sm:text-sm">
+          <div className="relative mx-auto max-w-7xl px-10 py-2.5 flex items-center justify-center gap-2 text-center">
             <Truck />
             <p className="font-medium">
               <span className="font-semibold">Entregas a domicilio en toda {site.country}</span>{" "}
@@ -20,7 +20,7 @@ export default function Navbar() {
             </p>
             <button
               onClick={() => setBannerOpen(false)}
-              className="absolute right-4 text-brand-200 hover:text-white"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-200 hover:text-white"
               aria-label="Cerrar"
             >
               <X className="w-4 h-4" />
@@ -29,19 +29,19 @@ export default function Navbar() {
         </div>
       )}
       <div className="bg-white/90 backdrop-blur border-b border-brand-100">
-        <nav className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <span className="grid place-items-center w-11 h-11 rounded-full border-2 border-brand-500 text-brand-600">
-              <Paw className="w-6 h-6" />
+        <nav className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-2">
+          <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3">
+            <span className="grid shrink-0 place-items-center w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 border-brand-500 text-brand-600">
+              <Paw className="w-5 h-5 sm:w-6 sm:h-6" />
             </span>
-            <span className="leading-tight">
-              <span className="block font-serif text-lg font-bold text-brand-900">{site.name}</span>
-              <span className="block text-[11px] tracking-wider uppercase text-brand-500">
+            <span className="min-w-0 leading-tight">
+              <span className="block truncate font-serif text-base sm:text-lg font-bold text-brand-900">{site.name}</span>
+              <span className="block truncate text-[10px] sm:text-[11px] tracking-wider uppercase text-brand-500">
                 {site.tagline}
               </span>
             </span>
           </Link>
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
             <a
               href="#catalogo"
               className="hidden sm:inline-flex items-center rounded-full bg-brand-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-900 transition"
@@ -50,7 +50,7 @@ export default function Navbar() {
             </a>
             <Link
               href="/admin"
-              className="inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-medium text-brand-700 hover:bg-brand-50 transition"
+              className="inline-flex items-center gap-1.5 rounded-full px-3.5 py-2.5 text-sm font-medium text-brand-700 hover:bg-brand-50 transition"
             >
               Admin
             </Link>
