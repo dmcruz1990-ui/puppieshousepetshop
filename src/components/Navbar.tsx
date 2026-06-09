@@ -15,8 +15,8 @@ export default function Navbar() {
           <div className="relative mx-auto max-w-7xl px-10 py-2.5 flex items-center justify-center gap-2 text-center">
             <Truck />
             <p className="font-medium">
-              <span className="font-semibold">Entregas a domicilio en toda {site.country}</span>{" "}
-              <span className="hidden sm:inline text-brand-200">— Envíos seguros y responsables</span>
+              <span className="font-semibold">Envíos a todo destino ✈️</span>{" "}
+              <span className="hidden sm:inline text-brand-200">— nacionales e internacionales, con diferentes métodos de pago</span>
             </p>
             <button
               onClick={() => setBannerOpen(false)}

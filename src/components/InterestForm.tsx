@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { addLead } from "@/lib/clientStore";
+import { site } from "@/data/site";
 import { Heart, Check } from "./icons";
 
 export default function InterestForm() {
@@ -37,13 +38,11 @@ export default function InterestForm() {
             de entrega segura en toda Colombia. Sin compromiso.
           </p>
           <ul className="mt-6 space-y-2 text-sm text-brand-100">
-            {["Cachorros con cartilla de vacunación y desparasitación", "Entrega segura a domicilio", "Asesoría personalizada por WhatsApp"].map(
-              (t) => (
-                <li key={t} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-brand-300" /> {t}
-                </li>
-              ),
-            )}
+            {site.includes.map((t) => (
+              <li key={t} className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-brand-300" /> {t}
+              </li>
+            ))}
           </ul>
         </div>
 

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { site, whatsappLink } from "@/data/site";
-import { Paw, Whatsapp } from "./icons";
+import { Paw, Whatsapp, Facebook, Instagram, TikTok } from "./icons";
 
 export default function Footer() {
   return (
@@ -15,6 +15,17 @@ export default function Footer() {
               <span className="font-serif text-lg font-bold text-brand-900">{site.name}</span>
             </div>
             <p className="mt-3 text-sm text-brand-500">{site.description}</p>
+            <div className="mt-4 flex items-center gap-3">
+              <a href={site.social.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="grid h-9 w-9 place-items-center rounded-full bg-brand-100 text-brand-700 hover:bg-brand-800 hover:text-white transition">
+                <Facebook className="w-4 h-4" />
+              </a>
+              <a href={site.social.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="grid h-9 w-9 place-items-center rounded-full bg-brand-100 text-brand-700 hover:bg-brand-800 hover:text-white transition">
+                <Instagram className="w-4 h-4" />
+              </a>
+              <a href={site.social.tiktok} target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="grid h-9 w-9 place-items-center rounded-full bg-brand-100 text-brand-700 hover:bg-brand-800 hover:text-white transition">
+                <TikTok className="w-4 h-4" />
+              </a>
+            </div>
           </div>
           <div>
             <h4 className="font-semibold text-brand-900">Navegación</h4>
@@ -28,7 +39,8 @@ export default function Footer() {
             <h4 className="font-semibold text-brand-900">Contacto</h4>
             <ul className="mt-3 space-y-2 text-sm text-brand-500">
               <li>{site.city}, {site.country}</li>
-              <li>{site.email}</li>
+              <li><a href={`mailto:${site.email}`} className="hover:text-brand-800">{site.email}</a></li>
+              <li><a href={site.website} target="_blank" rel="noopener noreferrer" className="hover:text-brand-800">puppieshousepetshop.com</a></li>
               <li>
                 <a href={whatsappLink("Hola, quiero información sobre los cachorros 🐾")} className="inline-flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700">
                   <Whatsapp className="w-4 h-4" /> Escríbenos por WhatsApp
@@ -39,8 +51,8 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-brand-900">Compromiso</h4>
             <p className="mt-3 text-sm text-brand-500">
-              Cachorros sanos, criados con amor y entregados con responsabilidad. Tu nuevo mejor
-              amigo te espera.
+              Respetamos la ley de bienestar animal y te asesoramos para comprar tu cachorro
+              legalmente, con garantía de salud, fenotipo y genotipo de la raza.
             </p>
           </div>
         </div>
