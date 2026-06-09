@@ -10,11 +10,10 @@ export const site = {
     "¡Hola, bienvenido! Ya puedes visitar nuestra tienda online y comprar directamente a través de la web. Respetamos la ley de bienestar animal y te asesoramos sobre cómo comprar tu cachorro legalmente.",
   guarantee:
     "Al adquirir un cachorro con nosotros tienes la tranquilidad de que tu compra es segura: te damos todas las garantías en cuanto a salud, fenotipo y genotipo de la raza.",
-  city: "Valledupar",
+  city: "Medellín",
   country: "Colombia",
   // Número de WhatsApp en formato internacional sin "+" ni espacios.
-  // TODO: reemplazar por el número real del negocio.
-  whatsapp: "573000000000",
+  whatsapp: "573117271846",
   email: "info@puppieshousepetshop.com",
   website: "https://puppieshousepetshop.com",
   // Redes sociales oficiales
