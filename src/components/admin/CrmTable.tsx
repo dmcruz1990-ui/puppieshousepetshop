@@ -130,7 +130,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
     <button
       onClick={onClick}
       className={`rounded-full border px-3.5 py-1.5 text-sm font-medium capitalize transition ${
-        active ? "border-brand-800 bg-brand-800 text-white" : "border-brand-200 bg-white text-brand-600 hover:border-brand-400"
+        active ? "border-accent-500 bg-accent-500 text-white" : "border-brand-200 bg-white text-brand-600 hover:border-brand-400"
       }`}
     >
       {children}

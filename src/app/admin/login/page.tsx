@@ -51,7 +51,7 @@ export default function AdminLogin() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-brand-800 px-5 py-3 font-semibold text-white hover:bg-brand-900 transition disabled:opacity-60"
+            className="w-full rounded-xl bg-accent-500 px-5 py-3 font-semibold text-white hover:bg-accent-600 transition disabled:opacity-60"
           >
             {loading ? "Ingresando..." : "Ingresar"}
           </button>

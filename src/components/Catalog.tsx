@@ -42,7 +42,7 @@ export default function Catalog({ products }: { products: Product[] }) {
             onClick={() => setCat(c.key)}
             className={`rounded-full border px-5 py-2.5 text-sm font-medium transition ${
               cat === c.key
-                ? "border-brand-800 bg-brand-800 text-white"
+                ? "border-accent-500 bg-accent-500 text-white"
                 : "border-brand-200 bg-white text-brand-700 hover:border-brand-400"
             }`}
           >
@@ -111,7 +111,7 @@ function ViewBtn({
     <button
       onClick={onClick}
       className={`inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-medium transition ${
-        active ? "bg-brand-800 text-white" : "text-brand-700 hover:text-brand-900"
+        active ? "bg-accent-500 text-white" : "text-brand-700 hover:text-brand-900"
       }`}
     >
       {icon}

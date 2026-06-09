@@ -110,7 +110,7 @@ function ReserveBtn({ onClick, disabled }: { onClick: () => void; disabled?: boo
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center gap-1.5 rounded-lg bg-brand-800 px-3.5 py-2 text-sm font-semibold text-white hover:bg-brand-900 transition"
+      className="inline-flex items-center gap-1.5 rounded-lg bg-accent-500 px-3.5 py-2 text-sm font-semibold text-white hover:bg-accent-600 transition"
     >
       <Whatsapp className="w-4 h-4" /> Reservar
     </button>

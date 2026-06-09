@@ -42,7 +42,7 @@ export default function Sidebar() {
               key={item.href}
               href={item.href}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                active ? "bg-brand-800 text-white" : "text-brand-600 hover:bg-brand-50"
+                active ? "bg-accent-500 text-white" : "text-brand-600 hover:bg-brand-50"
               }`}
             >
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

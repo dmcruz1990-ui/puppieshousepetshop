@@ -25,22 +25,22 @@ export default function InterestForm() {
 
   return (
     <section id="contacto" className="mx-auto max-w-7xl px-4 py-16">
-      <div className="grid items-center gap-10 rounded-3xl bg-brand-900 p-8 sm:p-12 lg:grid-cols-2">
-        <div className="text-brand-50">
-          <span className="inline-flex items-center gap-2 rounded-full bg-brand-800 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-brand-100">
+      <div className="grid items-center gap-10 rounded-3xl bg-grape-700 p-8 sm:p-12 lg:grid-cols-2">
+        <div className="text-white">
+          <span className="inline-flex items-center gap-2 rounded-full bg-grape-600 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-grape-100">
             <Heart className="w-4 h-4" /> Encuentra tu compañero
           </span>
           <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-bold">
             ¿Aún no decides? Te ayudamos a elegir
           </h2>
-          <p className="mt-3 text-brand-200">
+          <p className="mt-3 text-grape-100">
             Déjanos tus datos y un asesor te contactará con disponibilidad, fotos en vivo y planes
-            de entrega segura en toda Colombia. Sin compromiso.
+            de entrega segura. Sin compromiso.
           </p>
-          <ul className="mt-6 space-y-2 text-sm text-brand-100">
+          <ul className="mt-6 space-y-2 text-sm text-grape-100">
             {site.includes.map((t) => (
               <li key={t} className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-brand-300" /> {t}
+                <Check className="w-4 h-4 text-accent-300" /> {t}
               </li>
             ))}
           </ul>
@@ -76,7 +76,7 @@ export default function InterestForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-xl bg-brand-800 px-5 py-3 font-semibold text-white hover:bg-brand-900 transition disabled:opacity-60"
+                className="w-full rounded-xl bg-accent-500 px-5 py-3 font-semibold text-white hover:bg-accent-600 transition disabled:opacity-60"
               >
                 {loading ? "Enviando..." : "Enviar y recibir asesoría"}
               </button>
