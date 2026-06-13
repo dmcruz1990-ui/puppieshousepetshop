@@ -61,6 +61,27 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ENVÍOS INTERNACIONALES */}
+      <section className="bg-grape-700">
+        <div className="mx-auto max-w-7xl px-4 py-12 text-center text-white">
+          <span className="inline-flex items-center gap-2 rounded-full bg-grape-600 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider">
+            ✈️ {site.shippingNote}
+          </span>
+          <h2 className="mt-4 font-serif text-3xl sm:text-4xl font-bold">Entregamos tu mascota a todo destino</h2>
+          <p className="mx-auto mt-2 max-w-2xl text-grape-100">
+            Experiencia en envíos nacionales e internacionales, de forma confiable y segura, con
+            diferentes métodos de pago y servicio contra entrega.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            {site.countries.map((c) => (
+              <span key={c.name} className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm font-medium ring-1 ring-white/20">
+                <span className="text-lg">{c.flag}</span> {c.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* FORMULARIO / CRM */}
       <InterestForm />
 

@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { site } from "@/data/site";
-import { Paw, X } from "./icons";
+import BrandLogo from "./BrandLogo";
+import { X } from "./icons";
 
 export default function Navbar() {
   const [bannerOpen, setBannerOpen] = useState(true);
@@ -31,9 +32,7 @@ export default function Navbar() {
       <div className="bg-white/90 backdrop-blur border-b border-brand-100">
         <nav className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-2">
           <Link href="/" className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-            <span className="grid shrink-0 place-items-center w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 border-brand-500 text-brand-600">
-              <Paw className="w-5 h-5 sm:w-6 sm:h-6" />
-            </span>
+            <BrandLogo size={44} />
             <span className="min-w-0 leading-tight">
               <span className="block truncate font-serif text-base sm:text-lg font-bold text-brand-900">{site.name}</span>
               <span className="block truncate text-[10px] sm:text-[11px] tracking-wider uppercase text-brand-500">

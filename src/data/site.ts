@@ -26,6 +26,16 @@ export const site = {
   // Moneda
   currency: "COP",
   shippingBanner: "Envíos a todo destino ✈️ — nacionales e internacionales, con diferentes métodos de pago",
+  // Servicio y destinos de envío
+  shippingNote: "Envíos nacionales e internacionales · Servicio contra entrega",
+  countries: [
+    { name: "Colombia", flag: "🇨🇴" },
+    { name: "Venezuela", flag: "🇻🇪" },
+    { name: "Ecuador", flag: "🇪🇨" },
+    { name: "Perú", flag: "🇵🇪" },
+    { name: "México", flag: "🇲🇽" },
+    { name: "Estados Unidos", flag: "🇺🇸" },
+  ],
   // Lo que incluye cada cachorro
   includes: [
     "Carnet de vacunación",

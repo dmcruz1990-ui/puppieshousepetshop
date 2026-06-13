@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { site, whatsappLink } from "@/data/site";
-import { Paw, Whatsapp, Facebook, Instagram, TikTok } from "./icons";
+import BrandLogo from "./BrandLogo";
+import { Whatsapp, Facebook, Instagram, TikTok } from "./icons";
 
 export default function Footer() {
   return (
@@ -9,9 +10,7 @@ export default function Footer() {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <div className="flex items-center gap-3">
-              <span className="grid place-items-center w-10 h-10 rounded-full border-2 border-brand-500 text-brand-600">
-                <Paw className="w-5 h-5" />
-              </span>
+              <BrandLogo size={40} />
               <span className="font-serif text-lg font-bold text-brand-900">{site.name}</span>
             </div>
             <p className="mt-3 text-sm text-brand-500">{site.description}</p>

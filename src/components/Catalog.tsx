@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { categories, type Product, type Size } from "@/data/products";
+import { getCatalog } from "@/lib/clientStore";
 import ProductCard from "./ProductCard";
 import { Grid, List, Filter } from "./icons";
 
@@ -13,10 +14,14 @@ const sortLabels: Record<SortKey, string> = {
   "precio-desc": "Mayor a menor precio",
 };
 
-export default function Catalog({ products }: { products: Product[] }) {
+export default function Catalog({ products: initial }: { products: Product[] }) {
+  const [products, setProducts] = useState<Product[]>(initial);
   const [cat, setCat] = useState<Size | "todos">("todos");
   const [sort, setSort] = useState<SortKey>("destacados");
   const [view, setView] = useState<"grid" | "list">("grid");
+
+  // Refleja los cambios hechos desde el panel admin (precios, fotos, estado).
+  useEffect(() => setProducts(getCatalog()), []);
 
   const filtered = useMemo(() => {
     let list = products.filter((p) => (cat === "todos" ? true : p.size === cat));

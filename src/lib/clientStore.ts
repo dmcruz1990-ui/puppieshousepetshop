@@ -111,10 +111,83 @@ export function updateLeadStatus(id: string, status: LeadStatus): Lead | null {
   return lead;
 }
 
+// ---- Catálogo editable (localStorage) ----
+const CATALOG_KEY = "phps_catalog_v1";
+
+export function getCatalog(): Product[] {
+  if (typeof window === "undefined") return products;
+  try {
+    const raw = window.localStorage.getItem(CATALOG_KEY);
+    if (!raw) {
+      window.localStorage.setItem(CATALOG_KEY, JSON.stringify(products));
+      return products;
+    }
+    return JSON.parse(raw) as Product[];
+  } catch {
+    return products;
+  }
+}
+
+function saveCatalog(list: Product[]) {
+  if (typeof window !== "undefined") window.localStorage.setItem(CATALOG_KEY, JSON.stringify(list));
+}
+
+export function updateProduct(id: string, patch: Partial<Product>): Product[] {
+  const list = getCatalog().map((p) => (p.id === id ? { ...p, ...patch } : p));
+  saveCatalog(list);
+  return list;
+}
+
+export function addProduct(p: Partial<Product>): Product[] {
+  const item: Product = {
+    id: `p${Date.now()}`,
+    name: p.name || "Nuevo cachorro",
+    breed: p.breed || "Bulldog Francés",
+    size: p.size || "pequeno",
+    price: p.price ?? 3000000,
+    status: p.status || "disponible",
+    image: p.image || "",
+    ageWeeks: p.ageWeeks ?? 8,
+    sex: p.sex || "macho",
+    color: p.color || "",
+    vaccinated: p.vaccinated ?? true,
+    dewormed: p.dewormed ?? true,
+    stock: p.stock ?? 1,
+    description: p.description || "",
+    featured: p.featured,
+  };
+  const list = [item, ...getCatalog()];
+  saveCatalog(list);
+  return list;
+}
+
+export function deleteProduct(id: string): Product[] {
+  const list = getCatalog().filter((p) => p.id !== id);
+  saveCatalog(list);
+  return list;
+}
+
+export function resetCatalog(): Product[] {
+  saveCatalog(products);
+  return products;
+}
+
+// ---- Logo (localStorage, dataURL) ----
+const LOGO_KEY = "phps_logo";
+export function getLogo(): string | null {
+  if (typeof window === "undefined") return null;
+  return window.localStorage.getItem(LOGO_KEY);
+}
+export function setLogo(dataUrl: string | null) {
+  if (typeof window === "undefined") return;
+  if (dataUrl) window.localStorage.setItem(LOGO_KEY, dataUrl);
+  else window.localStorage.removeItem(LOGO_KEY);
+}
+
 // ---- Inventario ----
 export type InventoryRow = Product & { value: number };
 export function getInventory(): InventoryRow[] {
-  return products.map((p) => ({ ...p, value: p.price * p.stock }));
+  return getCatalog().map((p) => ({ ...p, value: p.price * p.stock }));
 }
 
 // ---- Dashboard ----
