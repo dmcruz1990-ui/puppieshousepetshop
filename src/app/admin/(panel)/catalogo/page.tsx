@@ -2,31 +2,68 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  getCatalog,
-  updateProduct,
-  addProduct,
-  deleteProduct,
-  resetCatalog,
-} from "@/lib/clientStore";
+  fetchCatalog,
+  updateProductDb,
+  addProductDb,
+  deleteProductDb,
+  seedCatalogIfEmpty,
+  uploadCatalogImage,
+} from "@/lib/catalog";
 import { type Product, type Size, type ProductStatus, sizeLabel } from "@/data/products";
 import { formatCOP } from "@/data/site";
-import { readImageResized } from "@/lib/image";
 import { PageHeader, StatCard } from "@/components/admin/ui";
 
 export default function CatalogoAdminPage() {
   const [items, setItems] = useState<Product[] | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  useEffect(() => setItems(getCatalog()), []);
+  useEffect(() => {
+    fetchCatalog().then(setItems).catch(() => setItems([]));
+  }, []);
 
   if (!items) return <div className="p-10 text-brand-400">Cargando…</div>;
 
-  const patch = (id: string, p: Partial<Product>) => setItems(updateProduct(id, p));
-  const add = () => setItems(addProduct({}));
-  const remove = (id: string) => {
-    if (confirm("¿Eliminar este cachorro del catálogo?")) setItems(deleteProduct(id));
+  const save = async (id: string, patch: Partial<Product>) => {
+    setItems((prev) => (prev ? prev.map((p) => (p.id === id ? { ...p, ...patch } : p)) : prev));
+    try {
+      await updateProductDb(id, patch);
+    } catch {
+      alert("No se pudo guardar. Revisa tu conexión o que la tabla 'products' exista.");
+    }
   };
-  const reset = () => {
-    if (confirm("¿Restablecer el catálogo a los valores originales? Se perderán tus cambios.")) setItems(resetCatalog());
+
+  const add = async () => {
+    setBusy(true);
+    try {
+      const p = await addProductDb();
+      setItems((prev) => (prev ? [p, ...prev] : [p]));
+    } catch {
+      alert("No se pudo agregar. ¿Iniciaste sesión y existe la tabla?");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const remove = async (id: string) => {
+    if (!confirm("¿Eliminar este cachorro del catálogo?")) return;
+    setItems((prev) => (prev ? prev.filter((p) => p.id !== id) : prev));
+    try {
+      await deleteProductDb(id);
+    } catch {
+      alert("No se pudo eliminar.");
+    }
+  };
+
+  const seed = async () => {
+    setBusy(true);
+    try {
+      const list = await seedCatalogIfEmpty();
+      setItems(list);
+    } catch {
+      alert("No se pudo cargar el catálogo inicial.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const available = items.filter((p) => p.status === "disponible").length;
@@ -36,13 +73,15 @@ export default function CatalogoAdminPage() {
     <div>
       <PageHeader
         title="Catálogo"
-        subtitle="Edita precios, fotos, estado y stock. Los cambios se reflejan en la web al instante."
+        subtitle="Edita precios, fotos, estado y stock. Se guarda en tu base de datos y se ve en la web al instante."
         action={
           <div className="flex gap-2">
-            <button onClick={reset} className="rounded-full border border-brand-200 px-4 py-2 text-sm font-medium text-brand-600 hover:bg-brand-50">
-              Restablecer
-            </button>
-            <button onClick={add} className="rounded-full bg-accent-500 px-4 py-2 text-sm font-semibold text-white hover:bg-accent-600">
+            {items.length === 0 && (
+              <button onClick={seed} disabled={busy} className="rounded-full border border-brand-200 px-4 py-2 text-sm font-medium text-brand-600 hover:bg-brand-50 disabled:opacity-50">
+                Cargar catálogo inicial
+              </button>
+            )}
+            <button onClick={add} disabled={busy} className="rounded-full bg-accent-500 px-4 py-2 text-sm font-semibold text-white hover:bg-accent-600 disabled:opacity-50">
               + Agregar cachorro
             </button>
           </div>
@@ -55,15 +94,20 @@ export default function CatalogoAdminPage() {
           <StatCard label="Valor del inventario" value={formatCOP(value)} tone="accent" />
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          {items.map((p) => (
-            <ProductEditor key={p.id} product={p} onPatch={patch} onDelete={remove} />
-          ))}
-        </div>
+        {items.length === 0 ? (
+          <div className="rounded-3xl border border-dashed border-brand-200 bg-white p-10 text-center">
+            <p className="text-brand-500">Aún no hay cachorros. Pulsa <b>“Cargar catálogo inicial”</b> o <b>“Agregar cachorro”</b>.</p>
+          </div>
+        ) : (
+          <div className="grid gap-4 lg:grid-cols-2">
+            {items.map((p) => (
+              <ProductEditor key={p.id} product={p} onSave={save} onDelete={remove} />
+            ))}
+          </div>
+        )}
 
         <p className="text-xs text-brand-400">
-          💡 Los cambios se guardan en este navegador (versión de prueba). Al conectar Supabase serán permanentes y
-          compartidos en todos los dispositivos.
+          ☁️ Guardado en Supabase. Las fotos se suben a la nube y quedan permanentes para todos tus clientes.
         </p>
       </div>
     </div>
@@ -72,20 +116,32 @@ export default function CatalogoAdminPage() {
 
 function ProductEditor({
   product,
-  onPatch,
+  onSave,
   onDelete,
 }: {
   product: Product;
-  onPatch: (id: string, p: Partial<Product>) => void;
+  onSave: (id: string, p: Partial<Product>) => void;
   onDelete: (id: string) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const [draft, setDraft] = useState(product);
+  const [uploading, setUploading] = useState(false);
+
+  const commit = (patch: Partial<Product>) => onSave(product.id, patch);
 
   const onImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const url = await readImageResized(file);
-    onPatch(product.id, { image: url });
+    setUploading(true);
+    try {
+      const url = await uploadCatalogImage(file, product.id);
+      setDraft((d) => ({ ...d, image: url }));
+      commit({ image: url });
+    } catch {
+      alert("No se pudo subir la foto. Revisa que el bucket 'catalog' exista y tengas sesión.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -97,13 +153,13 @@ function ProductEditor({
             className="group relative h-24 w-24 overflow-hidden rounded-xl border border-brand-100 bg-brand-50"
             title="Cambiar foto"
           >
-            {product.image ? (
-              <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
+            {draft.image ? (
+              <img src={draft.image} alt={draft.name} className="h-full w-full object-cover" />
             ) : (
               <span className="grid h-full w-full place-items-center text-xs text-brand-400">Sin foto</span>
             )}
             <span className="absolute inset-x-0 bottom-0 bg-black/55 py-1 text-center text-[10px] font-semibold text-white opacity-0 transition group-hover:opacity-100">
-              Cambiar foto
+              {uploading ? "Subiendo…" : "Cambiar foto"}
             </span>
           </button>
           <input ref={fileRef} type="file" accept="image/*" onChange={onImage} className="hidden" />
@@ -111,16 +167,17 @@ function ProductEditor({
 
         <div className="min-w-0 flex-1 space-y-2">
           <input
-            value={product.name}
-            onChange={(e) => onPatch(product.id, { name: e.target.value })}
+            value={draft.name}
+            onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+            onBlur={() => commit({ name: draft.name })}
             className="w-full rounded-lg border border-brand-200 px-3 py-1.5 text-sm font-semibold text-brand-900 outline-none focus:border-accent-500"
           />
           <div className="grid grid-cols-2 gap-2">
             <Field label="Raza">
-              <input value={product.breed} onChange={(e) => onPatch(product.id, { breed: e.target.value })} className={inputCls} />
+              <input value={draft.breed} onChange={(e) => setDraft({ ...draft, breed: e.target.value })} onBlur={() => commit({ breed: draft.breed })} className={inputCls} />
             </Field>
             <Field label="Color">
-              <input value={product.color} onChange={(e) => onPatch(product.id, { color: e.target.value })} className={inputCls} />
+              <input value={draft.color} onChange={(e) => setDraft({ ...draft, color: e.target.value })} onBlur={() => commit({ color: draft.color })} className={inputCls} />
             </Field>
           </div>
         </div>
@@ -130,39 +187,40 @@ function ProductEditor({
         <Field label="Precio (COP)">
           <input
             type="number"
-            value={product.price}
-            onChange={(e) => onPatch(product.id, { price: Number(e.target.value) })}
+            value={draft.price}
+            onChange={(e) => setDraft({ ...draft, price: Number(e.target.value) })}
+            onBlur={() => commit({ price: draft.price })}
             className={`${inputCls} font-semibold`}
           />
         </Field>
         <Field label="Estado">
-          <select value={product.status} onChange={(e) => onPatch(product.id, { status: e.target.value as ProductStatus })} className={inputCls}>
+          <select value={draft.status} onChange={(e) => { const status = e.target.value as ProductStatus; setDraft({ ...draft, status }); commit({ status }); }} className={inputCls}>
             <option value="disponible">Disponible</option>
             <option value="reservado">Reservado</option>
             <option value="vendido">Vendido</option>
           </select>
         </Field>
         <Field label="Stock">
-          <input type="number" value={product.stock} onChange={(e) => onPatch(product.id, { stock: Number(e.target.value) })} className={inputCls} />
+          <input type="number" value={draft.stock} onChange={(e) => setDraft({ ...draft, stock: Number(e.target.value) })} onBlur={() => commit({ stock: draft.stock })} className={inputCls} />
         </Field>
         <Field label="Tamaño">
-          <select value={product.size} onChange={(e) => onPatch(product.id, { size: e.target.value as Size })} className={inputCls}>
+          <select value={draft.size} onChange={(e) => { const size = e.target.value as Size; setDraft({ ...draft, size }); commit({ size }); }} className={inputCls}>
             {(["pequeno", "mediano", "grande"] as Size[]).map((s) => (
               <option key={s} value={s}>{sizeLabel[s]}</option>
             ))}
           </select>
         </Field>
         <Field label="Sexo">
-          <select value={product.sex} onChange={(e) => onPatch(product.id, { sex: e.target.value as Product["sex"] })} className={inputCls}>
+          <select value={draft.sex} onChange={(e) => { const sex = e.target.value as Product["sex"]; setDraft({ ...draft, sex }); commit({ sex }); }} className={inputCls}>
             <option value="macho">Macho</option>
             <option value="hembra">Hembra</option>
           </select>
         </Field>
         <Field label="Edad (sem)">
-          <input type="number" value={product.ageWeeks} onChange={(e) => onPatch(product.id, { ageWeeks: Number(e.target.value) })} className={inputCls} />
+          <input type="number" value={draft.ageWeeks} onChange={(e) => setDraft({ ...draft, ageWeeks: Number(e.target.value) })} onBlur={() => commit({ ageWeeks: draft.ageWeeks })} className={inputCls} />
         </Field>
         <Field label="Destacado">
-          <select value={product.featured ? "si" : "no"} onChange={(e) => onPatch(product.id, { featured: e.target.value === "si" })} className={inputCls}>
+          <select value={draft.featured ? "si" : "no"} onChange={(e) => { const featured = e.target.value === "si"; setDraft({ ...draft, featured }); commit({ featured }); }} className={inputCls}>
             <option value="no">No</option>
             <option value="si">Sí</option>
           </select>
@@ -176,8 +234,9 @@ function ProductEditor({
 
       <Field label="Descripción">
         <textarea
-          value={product.description}
-          onChange={(e) => onPatch(product.id, { description: e.target.value })}
+          value={draft.description}
+          onChange={(e) => setDraft({ ...draft, description: e.target.value })}
+          onBlur={() => commit({ description: draft.description })}
           rows={2}
           className={`${inputCls} mt-1 resize-none`}
         />

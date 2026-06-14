@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { isAuthed } from "@/lib/clientStore";
+import { supabase } from "@/lib/supabase";
 import Sidebar from "@/components/admin/Sidebar";
 
 export default function PanelLayout({ children }: { children: React.ReactNode }) {
@@ -10,11 +10,19 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (!isAuthed()) {
-      router.replace("/admin/login");
-    } else {
-      setReady(true);
-    }
+    let active = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!active) return;
+      if (data.session) setReady(true);
+      else router.replace("/admin/login");
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (!session) router.replace("/admin/login");
+    });
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
   }, [router]);
 
   if (!ready) {

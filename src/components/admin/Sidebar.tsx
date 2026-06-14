@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Paw } from "@/components/icons";
 import { site } from "@/data/site";
-import { signOut } from "@/lib/clientStore";
+import { supabase } from "@/lib/supabase";
 
 const nav: { href: string; label: string; icon: string }[] = [
   { href: "/admin", label: "Dashboard", icon: "M3 12l9-9 9 9M5 10v10h14V10" },
@@ -32,8 +32,8 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const logout = () => {
-    signOut();
+  const logout = async () => {
+    await supabase.auth.signOut();
     router.push("/admin/login");
   };
 
