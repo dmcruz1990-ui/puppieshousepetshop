@@ -19,6 +19,7 @@ export type Product = {
   description: string;
   featured?: boolean;
   payLink?: string;
+  images?: string[];
 };
 
 // Fotos de Unsplash (libres) de cachorros.

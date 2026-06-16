@@ -19,9 +19,6 @@ export default function Home() {
       {/* CATÁLOGO */}
       <Catalog products={products} />
 
-      {/* BLOG (debajo de los perros) */}
-      <BlogSection />
-
       {/* CONFIANZA */}
       <section className="border-y border-brand-100 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-12">
@@ -73,6 +70,9 @@ export default function Home() {
 
       {/* FORMULARIO / CRM */}
       <InterestForm />
+
+      {/* BLOG (parte de abajo) */}
+      <BlogSection />
 
       <Footer />
 

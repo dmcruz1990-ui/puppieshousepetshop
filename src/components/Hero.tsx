@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { getSettings } from "@/lib/settings";
-import { Paw } from "./icons";
+import { site, whatsappLink } from "@/data/site";
+import { Paw, Facebook, Instagram, TikTok, Whatsapp } from "./icons";
 
 export default function Hero() {
   const [bg, setBg] = useState<string>("");
@@ -31,7 +32,27 @@ export default function Hero() {
           Cachorros de raza pura, sanos y criados con amor. Bulldog Francés y Teckel/Dachshund.
           ¡Encuentra tu compañero ideal!
         </p>
+        <div className="mt-5 flex items-center justify-center gap-3">
+          <Social href={whatsappLink("¡Hola Puppies House! 🐾 Quiero información sobre los cachorros.")} label="WhatsApp"><Whatsapp className="w-5 h-5" /></Social>
+          <Social href={site.social.instagram} label="Instagram"><Instagram className="w-5 h-5" /></Social>
+          <Social href={site.social.facebook} label="Facebook"><Facebook className="w-5 h-5" /></Social>
+          <Social href={site.social.tiktok} label="TikTok"><TikTok className="w-5 h-5" /></Social>
+        </div>
       </div>
     </section>
+  );
+}
+
+function Social({ href, label, children }: { href: string; label: string; children: React.ReactNode }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      className="grid h-10 w-10 place-items-center rounded-full bg-white text-accent-600 shadow-sm ring-1 ring-brand-100 hover:bg-accent-500 hover:text-white transition"
+    >
+      {children}
+    </a>
   );
 }

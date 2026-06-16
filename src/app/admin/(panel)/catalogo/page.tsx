@@ -7,7 +7,7 @@ import {
   addProductDb,
   deleteProductDb,
   seedCatalogIfEmpty,
-  uploadCatalogImage,
+  uploadImage,
 } from "@/lib/catalog";
 import { type Product, type Size, type ProductStatus, sizeLabel } from "@/data/products";
 import { formatCOP } from "@/data/site";
@@ -128,41 +128,64 @@ function ProductEditor({
   const [uploading, setUploading] = useState(false);
 
   const commit = (patch: Partial<Product>) => onSave(product.id, patch);
+  const gallery = draft.images && draft.images.length ? draft.images : draft.image ? [draft.image] : [];
 
-  const onImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const applyGallery = (images: string[]) => {
+    setDraft((d) => ({ ...d, images, image: images[0] || "" }));
+    commit({ images, image: images[0] || "" });
+  };
+
+  const onAddImages = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
     setUploading(true);
     try {
-      const url = await uploadCatalogImage(file, product.id);
-      setDraft((d) => ({ ...d, image: url }));
-      commit({ image: url });
+      const urls: string[] = [];
+      for (const f of files) urls.push(await uploadImage(f, product.id));
+      applyGallery([...gallery, ...urls]);
     } catch {
       alert("No se pudo subir la foto. Revisa que el bucket 'catalog' exista y tengas sesión.");
     } finally {
       setUploading(false);
+      e.target.value = "";
     }
   };
+
+  const removeImage = (idx: number) => applyGallery(gallery.filter((_, k) => k !== idx));
+  const makeCover = (idx: number) => applyGallery([gallery[idx], ...gallery.filter((_, k) => k !== idx)]);
 
   return (
     <div className="rounded-2xl border border-brand-100 bg-white p-4">
       <div className="flex gap-4">
-        <div className="shrink-0">
+        <div className="w-32 shrink-0">
           <button
             onClick={() => fileRef.current?.click()}
-            className="group relative h-24 w-24 overflow-hidden rounded-xl border border-brand-100 bg-brand-50"
-            title="Cambiar foto"
+            className="group relative h-24 w-32 overflow-hidden rounded-xl border border-brand-100 bg-brand-50"
+            title="Agregar fotos"
           >
-            {draft.image ? (
-              <img src={draft.image} alt={draft.name} className="h-full w-full object-cover" />
+            {gallery[0] ? (
+              <img src={gallery[0]} alt={draft.name} className="h-full w-full object-cover" />
             ) : (
               <span className="grid h-full w-full place-items-center text-xs text-brand-400">Sin foto</span>
             )}
             <span className="absolute inset-x-0 bottom-0 bg-black/55 py-1 text-center text-[10px] font-semibold text-white opacity-0 transition group-hover:opacity-100">
-              {uploading ? "Subiendo…" : "Cambiar foto"}
+              {uploading ? "Subiendo…" : "+ Agregar fotos"}
             </span>
           </button>
-          <input ref={fileRef} type="file" accept="image/*" onChange={onImage} className="hidden" />
+          <input ref={fileRef} type="file" accept="image/*" multiple onChange={onAddImages} className="hidden" />
+          {gallery.length > 1 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {gallery.map((img, k) => (
+                <div key={k} className="group relative h-9 w-9 overflow-hidden rounded-md border border-brand-100">
+                  <img src={img} alt="" className="h-full w-full object-cover" />
+                  {k === 0 && <span className="absolute inset-x-0 bottom-0 bg-accent-500 text-center text-[7px] font-bold text-white">PORTADA</span>}
+                  <button onClick={() => removeImage(k)} className="absolute right-0 top-0 grid h-3.5 w-3.5 place-items-center bg-rose-600 text-[8px] text-white" title="Quitar">✕</button>
+                  {k !== 0 && <button onClick={() => makeCover(k)} className="absolute inset-0 bg-black/0 hover:bg-black/30" title="Hacer portada" />}
+                </div>
+              ))}
+            </div>
+          )}
+          <p className="mt-1 text-[10px] text-brand-400">{gallery.length} foto(s). Clic en una para hacerla portada.</p>
         </div>
 
         <div className="min-w-0 flex-1 space-y-2">

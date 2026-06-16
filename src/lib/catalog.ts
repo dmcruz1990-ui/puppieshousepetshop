@@ -20,6 +20,7 @@ type Row = {
   featured: boolean | null;
   sort: number | null;
   pay_link: string | null;
+  images: string[] | null;
 };
 
 function rowToProduct(r: Row): Product {
@@ -40,6 +41,7 @@ function rowToProduct(r: Row): Product {
     description: r.description || "",
     featured: r.featured ?? false,
     payLink: r.pay_link || "",
+    images: Array.isArray(r.images) ? r.images : [],
   };
 }
 
@@ -61,6 +63,7 @@ function productToRow(p: Partial<Product>, sort?: number) {
   if (p.description !== undefined) row.description = p.description;
   if (p.featured !== undefined) row.featured = p.featured;
   if (p.payLink !== undefined) row.pay_link = p.payLink;
+  if (p.images !== undefined) row.images = p.images;
   if (sort !== undefined) row.sort = sort;
   return row;
 }

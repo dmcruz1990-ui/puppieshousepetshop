@@ -29,9 +29,10 @@ function trackLead(p: Product) {
 }
 
 export default function ProductCard({ product, layout = "grid", boldLink = "" }: { product: Product; layout?: "grid" | "list"; boldLink?: string }) {
-  const [src, setSrc] = useState(product.image);
   const sold = product.status === "vendido";
   const payLink = product.payLink || boldLink;
+  const gallery = (product.images && product.images.length ? product.images : [product.image]).filter(Boolean);
+  const cover = gallery[0] || product.image;
 
   const onReserve = () => {
     trackLead(product);
@@ -47,7 +48,10 @@ export default function ProductCard({ product, layout = "grid", boldLink = "" }:
     return (
       <article className="flex gap-4 rounded-2xl border border-brand-100 bg-white p-3 shadow-sm hover:shadow-md transition">
         <div className="relative h-28 w-32 shrink-0 overflow-hidden rounded-xl bg-brand-50">
-          <img src={src} onError={() => setSrc(asset("/placeholder-dog.svg"))} alt={product.name} className="h-full w-full object-cover" loading="lazy" />
+          <CoverImg src={cover} alt={product.name} />
+          {gallery.length > 1 && (
+            <span className="absolute bottom-1 right-1 rounded-full bg-black/60 px-1.5 py-0.5 text-[10px] font-semibold text-white">📷 {gallery.length}</span>
+          )}
         </div>
         <div className="flex flex-1 flex-col">
           <div className="flex items-center gap-2">
@@ -73,14 +77,8 @@ export default function ProductCard({ product, layout = "grid", boldLink = "" }:
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm hover:shadow-lg transition">
       <div className="relative aspect-[4/3] overflow-hidden bg-brand-50">
-        <img
-          src={src}
-          onError={() => setSrc(asset("/placeholder-dog.svg"))}
-          alt={product.name}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-          loading="lazy"
-        />
-        <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold shadow-sm">
+        <Gallery images={gallery} alt={product.name} />
+        <span className="pointer-events-none absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold shadow-sm">
           <Paw className={`w-3.5 h-3.5 ${statusStyles[product.status]}`} />
           <span className={statusStyles[product.status]}>{statusLabel[product.status]}</span>
         </span>
@@ -104,6 +102,39 @@ export default function ProductCard({ product, layout = "grid", boldLink = "" }:
       </div>
     </article>
   );
+}
+
+function CoverImg({ src, alt }: { src: string; alt: string }) {
+  const [s, setS] = useState(src || asset("/placeholder-dog.svg"));
+  return <img src={s} onError={() => setS(asset("/placeholder-dog.svg"))} alt={alt} className="h-full w-full object-cover" loading="lazy" />;
+}
+
+function Gallery({ images, alt }: { images: string[]; alt: string }) {
+  const [i, setI] = useState(0);
+  const list = images.length ? images : [asset("/placeholder-dog.svg")];
+  const n = list.length;
+  const go = (d: number) => setI((p) => (p + d + n) % n);
+  return (
+    <div className="absolute inset-0">
+      <GalleryImg key={i} src={list[i]} alt={alt} />
+      {n > 1 && (
+        <>
+          <button onClick={() => go(-1)} aria-label="Anterior" className="absolute left-2 top-1/2 z-10 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-white/85 text-lg text-brand-800 shadow hover:bg-white">‹</button>
+          <button onClick={() => go(1)} aria-label="Siguiente" className="absolute right-2 top-1/2 z-10 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-white/85 text-lg text-brand-800 shadow hover:bg-white">›</button>
+          <div className="absolute inset-x-0 bottom-2 z-10 flex justify-center gap-1.5">
+            {list.map((_, k) => (
+              <span key={k} className={`h-1.5 rounded-full bg-white transition-all ${k === i ? "w-4" : "w-1.5 opacity-60"}`} />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function GalleryImg({ src, alt }: { src: string; alt: string }) {
+  const [s, setS] = useState(src);
+  return <img src={s} onError={() => setS(asset("/placeholder-dog.svg"))} alt={alt} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" />;
 }
 
 function PayBtn({ href }: { href: string }) {
