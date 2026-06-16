@@ -21,6 +21,7 @@ type Row = {
   sort: number | null;
   pay_link: string | null;
   images: string[] | null;
+  created_at: string | null;
 };
 
 function rowToProduct(r: Row): Product {
@@ -42,6 +43,7 @@ function rowToProduct(r: Row): Product {
     featured: r.featured ?? false,
     payLink: r.pay_link || "",
     images: Array.isArray(r.images) ? r.images : [],
+    createdAt: r.created_at || "",
   };
 }
 
