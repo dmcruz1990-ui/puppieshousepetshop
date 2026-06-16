@@ -10,7 +10,10 @@ export default function BlogAdminPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    fetchPosts().then(setPosts).catch(() => setPosts([]));
+    // Siembra en la base si está vacía, para que las ediciones sí se guarden.
+    seedBlogIfEmpty()
+      .then(setPosts)
+      .catch(() => fetchPosts().then(setPosts).catch(() => setPosts([])));
   }, []);
 
   if (!posts) return <div className="p-10 text-brand-400">Cargando…</div>;
