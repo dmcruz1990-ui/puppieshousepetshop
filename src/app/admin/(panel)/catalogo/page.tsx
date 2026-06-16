@@ -241,6 +241,15 @@ function ProductEditor({
           className={`${inputCls} mt-1 resize-none`}
         />
       </Field>
+      <Field label="Link de pago Bold (opcional)">
+        <input
+          value={draft.payLink || ""}
+          onChange={(e) => setDraft({ ...draft, payLink: e.target.value })}
+          onBlur={() => commit({ payLink: draft.payLink })}
+          placeholder="https://checkout.bold.co/..."
+          className={inputCls}
+        />
+      </Field>
     </div>
   );
 }

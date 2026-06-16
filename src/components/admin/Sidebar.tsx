@@ -16,6 +16,7 @@ const nav: { href: string; label: string; icon: string }[] = [
   { href: "/admin/empleados", label: "Empleados", icon: "M17 20v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0 .01M23 20v-2a4 4 0 0 0-3-3.87" },
   { href: "/admin/turnos", label: "Turnos", icon: "M12 6v6l4 2M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20z" },
   { href: "/admin/plantillas", label: "Plantillas Mensajes", icon: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" },
+  { href: "/admin/blog", label: "Blog & Noticias", icon: "M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2zM9 7h7M9 11h7" },
   { href: "/admin/tareas", label: "Tareas", icon: "M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" },
   { href: "/admin/funciones", label: "Funciones", icon: "M3 7h18M3 12h18M3 17h18" },
   { href: "/admin/extras", label: "Extras", icon: "M12 2l2.4 7.4H22l-6 4.6 2.3 7.4L12 17l-6.3 4.4L8 14 2 9.4h7.6z" },

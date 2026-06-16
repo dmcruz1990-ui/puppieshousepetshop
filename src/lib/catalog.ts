@@ -19,6 +19,7 @@ type Row = {
   description: string | null;
   featured: boolean | null;
   sort: number | null;
+  pay_link: string | null;
 };
 
 function rowToProduct(r: Row): Product {
@@ -38,6 +39,7 @@ function rowToProduct(r: Row): Product {
     stock: r.stock ?? 0,
     description: r.description || "",
     featured: r.featured ?? false,
+    payLink: r.pay_link || "",
   };
 }
 
@@ -58,6 +60,7 @@ function productToRow(p: Partial<Product>, sort?: number) {
   if (p.stock !== undefined) row.stock = p.stock;
   if (p.description !== undefined) row.description = p.description;
   if (p.featured !== undefined) row.featured = p.featured;
+  if (p.payLink !== undefined) row.pay_link = p.payLink;
   if (sort !== undefined) row.sort = sort;
   return row;
 }
@@ -118,9 +121,9 @@ export async function seedCatalogIfEmpty(): Promise<Product[]> {
 }
 
 // Sube una imagen al bucket "catalog" y devuelve la URL pública.
-export async function uploadCatalogImage(file: File, productId: string): Promise<string> {
+export async function uploadImage(file: File, prefix: string): Promise<string> {
   const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-  const path = `${productId}-${Date.now()}.${ext}`;
+  const path = `${prefix}-${Date.now()}.${ext}`;
   const { error } = await supabase.storage.from("catalog").upload(path, file, {
     upsert: true,
     contentType: file.type || "image/jpeg",
@@ -129,3 +132,5 @@ export async function uploadCatalogImage(file: File, productId: string): Promise
   const { data } = supabase.storage.from("catalog").getPublicUrl(path);
   return data.publicUrl;
 }
+
+export const uploadCatalogImage = (file: File, productId: string) => uploadImage(file, productId);

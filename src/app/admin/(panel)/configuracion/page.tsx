@@ -1,5 +1,6 @@
 import { PageHeader, Card } from "@/components/admin/ui";
 import LogoUploader from "@/components/admin/LogoUploader";
+import SiteSettings from "@/components/admin/SiteSettings";
 import { site } from "@/data/site";
 
 export default function ConfiguracionPage() {
@@ -19,6 +20,7 @@ export default function ConfiguracionPage() {
       <PageHeader title="Configuración" subtitle="Datos generales del negocio" />
       <div className="p-6 space-y-6">
         <LogoUploader />
+        <SiteSettings />
         <Card className="p-0 overflow-hidden">
           <ul className="divide-y divide-brand-50">
             {rows.map(([k, v]) => (

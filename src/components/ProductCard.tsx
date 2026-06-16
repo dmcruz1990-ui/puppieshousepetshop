@@ -28,9 +28,10 @@ function trackLead(p: Product) {
   }
 }
 
-export default function ProductCard({ product, layout = "grid" }: { product: Product; layout?: "grid" | "list" }) {
+export default function ProductCard({ product, layout = "grid", boldLink = "" }: { product: Product; layout?: "grid" | "list"; boldLink?: string }) {
   const [src, setSrc] = useState(product.image);
   const sold = product.status === "vendido";
+  const payLink = product.payLink || boldLink;
 
   const onReserve = () => {
     trackLead(product);
@@ -57,9 +58,12 @@ export default function ProductCard({ product, layout = "grid" }: { product: Pro
           </div>
           <h3 className="font-serif text-lg font-bold text-brand-900 mt-0.5">{product.name}</h3>
           <p className="text-sm text-brand-500 line-clamp-1">{product.description}</p>
-          <div className="mt-auto flex items-center justify-between pt-2">
-            <span className="font-serif text-lg font-bold text-brand-800">{formatCOP(product.price)}</span>
-            <ReserveBtn onClick={onReserve} disabled={sold} />
+          <div className="mt-auto pt-2">
+            <div className="flex items-center justify-between">
+              <span className="font-serif text-lg font-bold text-brand-800">{formatCOP(product.price)}</span>
+              <ReserveBtn onClick={onReserve} disabled={sold} />
+            </div>
+            {!sold && payLink && <PayBtn href={payLink} />}
           </div>
         </div>
       </article>
@@ -90,12 +94,28 @@ export default function ProductCard({ product, layout = "grid" }: { product: Pro
           <span>{product.ageWeeks} sem</span>
         </div>
         <h3 className="font-serif text-xl font-bold text-brand-900 mt-1">{product.name}</h3>
-        <div className="mt-auto flex items-center justify-between pt-4">
-          <span className="font-serif text-lg font-bold text-brand-800">{formatCOP(product.price)}</span>
-          <ReserveBtn onClick={onReserve} disabled={sold} />
+        <div className="mt-auto pt-4">
+          <div className="flex items-center justify-between">
+            <span className="font-serif text-lg font-bold text-brand-800">{formatCOP(product.price)}</span>
+            <ReserveBtn onClick={onReserve} disabled={sold} />
+          </div>
+          {!sold && payLink && <PayBtn href={payLink} />}
         </div>
       </div>
     </article>
+  );
+}
+
+function PayBtn({ href }: { href: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-grape-700 px-3.5 py-2 text-sm font-semibold text-white hover:bg-grape-800 transition"
+    >
+      💳 Pagar en línea (Bold)
+    </a>
   );
 }
 

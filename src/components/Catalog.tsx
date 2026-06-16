@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { categories, type Product, type Size } from "@/data/products";
 import { fetchCatalog } from "@/lib/catalog";
+import { getSettings } from "@/lib/settings";
 import ProductCard from "./ProductCard";
 import { Grid, List, Filter } from "./icons";
 
@@ -19,10 +20,12 @@ export default function Catalog({ products: initial }: { products: Product[] }) 
   const [cat, setCat] = useState<Size | "todos">("todos");
   const [sort, setSort] = useState<SortKey>("destacados");
   const [view, setView] = useState<"grid" | "list">("grid");
+  const [boldLink, setBoldLink] = useState("");
 
   // Carga el catálogo real desde Supabase (precios, fotos y estado actualizados).
   useEffect(() => {
     fetchCatalog().then(setProducts).catch(() => {});
+    getSettings().then((s) => setBoldLink(s.bold_link || "")).catch(() => {});
   }, []);
 
   const filtered = useMemo(() => {
@@ -92,7 +95,7 @@ export default function Catalog({ products: initial }: { products: Product[] }) 
         }
       >
         {filtered.map((p) => (
-          <ProductCard key={p.id} product={p} layout={view} />
+          <ProductCard key={p.id} product={p} layout={view} boldLink={boldLink} />
         ))}
       </div>
 

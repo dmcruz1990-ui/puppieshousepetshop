@@ -1,8 +1,10 @@
 import Navbar from "@/components/Navbar";
+import Hero from "@/components/Hero";
 import Catalog from "@/components/Catalog";
+import BlogSection from "@/components/BlogSection";
 import InterestForm from "@/components/InterestForm";
 import Footer from "@/components/Footer";
-import { Paw, Shield, Truck, Heart, Whatsapp, Check } from "@/components/icons";
+import { Shield, Truck, Heart, Whatsapp, Check } from "@/components/icons";
 import { products } from "@/data/products";
 import { site, whatsappLink } from "@/data/site";
 
@@ -11,27 +13,14 @@ export default function Home() {
     <main className="min-h-screen bg-cream">
       <Navbar />
 
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 pt-10 pb-6 text-center sm:pt-14">
-          <p className="font-semibold uppercase tracking-[0.2em] text-brand-500 text-xs sm:text-sm">
-            Nuestros Cachorros
-          </p>
-          <h1 className="mt-2 font-serif text-5xl sm:text-7xl font-bold text-brand-950">
-            Catálogo
-          </h1>
-          <div className="mt-3 flex justify-center text-brand-400">
-            <Paw className="w-6 h-6" />
-          </div>
-          <p className="mx-auto mt-3 max-w-2xl text-base sm:text-lg text-brand-600 text-balance">
-            Cachorros de raza pura, sanos y criados con amor. Disponibles para reservar.
-            ¡Encuentra tu compañero ideal!
-          </p>
-        </div>
-      </section>
+      {/* HERO con foto de fondo editable */}
+      <Hero />
 
       {/* CATÁLOGO */}
       <Catalog products={products} />
+
+      {/* BLOG (debajo de los perros) */}
+      <BlogSection />
 
       {/* CONFIANZA */}
       <section className="border-y border-brand-100 bg-white">
