@@ -1,6 +1,9 @@
-import { getInventory } from "@/lib/clientStore";
+"use client";
+
+import { useEffect, useState } from "react";
+import { fetchInventory } from "@/lib/admin";
 import { formatCOP } from "@/data/site";
-import { sizeLabel, statusLabel } from "@/data/products";
+import { sizeLabel, statusLabel, type Product } from "@/data/products";
 import { PageHeader, StatCard } from "@/components/admin/ui";
 
 const statusStyles: Record<string, string> = {
@@ -9,8 +12,13 @@ const statusStyles: Record<string, string> = {
   vendido: "bg-rose-100 text-rose-700",
 };
 
+type Row = Product & { value: number };
+
 export default function InventarioPage() {
-  const inv = getInventory();
+  const [inv, setInv] = useState<Row[] | null>(null);
+  useEffect(() => { fetchInventory().then(setInv).catch(() => setInv([])); }, []);
+  if (!inv) return <div className="p-10 text-brand-400">Cargando…</div>;
+
   const units = inv.reduce((a, p) => a + p.stock, 0);
   const value = inv.reduce((a, p) => a + p.value, 0);
   const lowStock = inv.filter((p) => p.status === "disponible" && p.stock <= 1).length;
@@ -25,8 +33,8 @@ export default function InventarioPage() {
           <StatCard label="Bajo stock" value={String(lowStock)} hint="≤ 1 unidad disponible" tone="rose" />
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-brand-100 bg-white">
-          <table className="w-full text-sm">
+        <div className="overflow-x-auto rounded-2xl border border-brand-100 bg-white">
+          <table className="w-full min-w-[640px] text-sm">
             <thead className="bg-brand-50 text-left text-brand-500">
               <tr>
                 <th className="px-5 py-3 font-medium">Raza</th>
@@ -48,14 +56,10 @@ export default function InventarioPage() {
                   </td>
                   <td className="px-5 py-3 text-brand-600">{sizeLabel[p.size]}</td>
                   <td className="px-5 py-3">
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusStyles[p.status]}`}>
-                      {statusLabel[p.status]}
-                    </span>
+                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${statusStyles[p.status]}`}>{statusLabel[p.status]}</span>
                   </td>
                   <td className="px-5 py-3 text-center">
-                    <span className={p.stock <= 1 && p.status === "disponible" ? "font-bold text-rose-600" : "text-brand-700"}>
-                      {p.stock}
-                    </span>
+                    <span className={p.stock <= 1 && p.status === "disponible" ? "font-bold text-rose-600" : "text-brand-700"}>{p.stock}</span>
                   </td>
                   <td className="px-5 py-3 text-right text-brand-600">{formatCOP(p.price)}</td>
                   <td className="px-5 py-3 text-right font-semibold text-brand-800">{formatCOP(p.value)}</td>

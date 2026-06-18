@@ -1,8 +1,14 @@
-import { getShifts } from "@/lib/clientStore";
+"use client";
+
+import { useEffect, useState } from "react";
+import { fetchShifts } from "@/lib/admin";
+import type { Shift } from "@/lib/clientStore";
 import { PageHeader, TableWrap, Th, Badge } from "@/components/admin/ui";
 
 export default function TurnosPage() {
-  const shifts = getShifts();
+  const [shifts, setShifts] = useState<Shift[] | null>(null);
+  useEffect(() => { fetchShifts().then(setShifts).catch(() => setShifts([])); }, []);
+  if (!shifts) return <div className="p-10 text-brand-400">Cargando…</div>;
   return (
     <div>
       <PageHeader title="Turnos" subtitle="Horarios del personal" />

@@ -1,8 +1,14 @@
-import { getEvents } from "@/lib/clientStore";
+"use client";
+
+import { useEffect, useState } from "react";
+import { fetchEvents } from "@/lib/admin";
+import type { EventItem } from "@/lib/clientStore";
 import { PageHeader, Card, Badge } from "@/components/admin/ui";
 
 export default function EventosPage() {
-  const events = getEvents();
+  const [events, setEvents] = useState<EventItem[] | null>(null);
+  useEffect(() => { fetchEvents().then(setEvents).catch(() => setEvents([])); }, []);
+  if (!events) return <div className="p-10 text-brand-400">Cargando…</div>;
   return (
     <div>
       <PageHeader title="Eventos" subtitle="Agenda de actividades del criadero" />

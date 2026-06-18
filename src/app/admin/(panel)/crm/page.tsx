@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getLeads, type Lead } from "@/lib/clientStore";
+import type { Lead } from "@/lib/clientStore";
+import { fetchLeads } from "@/lib/admin";
 import { PageHeader, StatCard } from "@/components/admin/ui";
 import CrmTable from "@/components/admin/CrmTable";
 
@@ -9,7 +10,7 @@ export default function CrmPage() {
   const [leads, setLeads] = useState<Lead[] | null>(null);
 
   useEffect(() => {
-    setLeads(getLeads());
+    fetchLeads().then(setLeads).catch(() => setLeads([]));
   }, []);
 
   if (!leads) return <div className="p-10 text-brand-400">Cargando…</div>;

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { whatsappLink, formatCOP } from "@/data/site";
 import { sizeLabel, statusLabel, type Product } from "@/data/products";
-import { addLead } from "@/lib/clientStore";
+import { addLeadDb } from "@/lib/admin";
 import { asset } from "@/lib/asset";
 import { Paw, Whatsapp, Check, X } from "./icons";
 
@@ -14,18 +14,14 @@ const statusStyles: Record<Product["status"], string> = {
 };
 
 function trackLead(p: Product) {
-  try {
-    addLead({
-      source: "whatsapp",
-      productId: p.id,
-      productName: p.name,
-      name: "Interesado web",
-      phone: "—",
-      message: `Reservar ${p.name}`,
-    });
-  } catch {
-    /* la versión de prueba no debe romperse si falla el registro */
-  }
+  addLeadDb({
+    source: "whatsapp",
+    productId: p.id,
+    productName: p.name,
+    name: "Interesado web",
+    phone: "—",
+    message: `Reservar ${p.name}`,
+  }).catch(() => {});
 }
 
 function publishedLabel(iso?: string) {

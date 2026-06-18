@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { updateLeadStatus, type Lead, type LeadStatus } from "@/lib/clientStore";
+import type { Lead, LeadStatus } from "@/lib/clientStore";
+import { updateLeadStatusDb } from "@/lib/admin";
 import { Whatsapp } from "@/components/icons";
 
 const STATUSES: LeadStatus[] = ["nuevo", "contactado", "negociando", "cerrado", "perdido"];
@@ -39,7 +40,7 @@ export default function CrmTable({ initial }: { initial: Lead[] }) {
 
   const setStatus = (id: string, status: LeadStatus) => {
     setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, status } : l)));
-    updateLeadStatus(id, status);
+    updateLeadStatusDb(id, status);
   };
 
   return (

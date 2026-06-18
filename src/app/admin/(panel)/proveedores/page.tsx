@@ -1,8 +1,14 @@
-import { getSuppliers } from "@/lib/clientStore";
+"use client";
+
+import { useEffect, useState } from "react";
+import { fetchSuppliers } from "@/lib/admin";
+import type { Supplier } from "@/lib/clientStore";
 import { PageHeader, TableWrap, Th, Badge } from "@/components/admin/ui";
 
 export default function ProveedoresPage() {
-  const suppliers = getSuppliers();
+  const [suppliers, setSuppliers] = useState<Supplier[] | null>(null);
+  useEffect(() => { fetchSuppliers().then(setSuppliers).catch(() => setSuppliers([])); }, []);
+  if (!suppliers) return <div className="p-10 text-brand-400">Cargando…</div>;
   return (
     <div>
       <PageHeader title="Proveedores" subtitle="Aliados de alimento, insumos y logística" />

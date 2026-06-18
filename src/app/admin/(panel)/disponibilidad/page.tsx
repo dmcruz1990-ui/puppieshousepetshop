@@ -1,8 +1,14 @@
-import { getAvailability } from "@/lib/clientStore";
+"use client";
+
+import { useEffect, useState } from "react";
+import { fetchAvailability } from "@/lib/admin";
+import type { Availability } from "@/lib/clientStore";
 import { PageHeader, Card } from "@/components/admin/ui";
 
 export default function DisponibilidadPage() {
-  const items = getAvailability();
+  const [items, setItems] = useState<Availability[] | null>(null);
+  useEffect(() => { fetchAvailability().then(setItems).catch(() => setItems([])); }, []);
+  if (!items) return <div className="p-10 text-brand-400">Cargando…</div>;
   return (
     <div>
       <PageHeader title="Disponibilidad" subtitle="Cupos de visitas, videollamadas y entregas" />

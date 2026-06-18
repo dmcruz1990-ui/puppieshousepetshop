@@ -1,8 +1,14 @@
-import { getTemplates } from "@/lib/clientStore";
+"use client";
+
+import { useEffect, useState } from "react";
+import { fetchTemplates } from "@/lib/admin";
+import type { Template } from "@/lib/clientStore";
 import { PageHeader, Card } from "@/components/admin/ui";
 
 export default function PlantillasPage() {
-  const templates = getTemplates();
+  const [templates, setTemplates] = useState<Template[] | null>(null);
+  useEffect(() => { fetchTemplates().then(setTemplates).catch(() => setTemplates([])); }, []);
+  if (!templates) return <div className="p-10 text-brand-400">Cargando…</div>;
   return (
     <div>
       <PageHeader title="Plantillas de Mensajes" subtitle="Respuestas rápidas para WhatsApp y remarketing" />

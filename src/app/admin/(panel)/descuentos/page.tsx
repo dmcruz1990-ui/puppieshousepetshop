@@ -1,8 +1,14 @@
-import { getDiscounts } from "@/lib/clientStore";
+"use client";
+
+import { useEffect, useState } from "react";
+import { fetchDiscounts } from "@/lib/admin";
+import type { Discount } from "@/lib/clientStore";
 import { PageHeader, TableWrap, Th, Badge } from "@/components/admin/ui";
 
 export default function DescuentosPage() {
-  const discounts = getDiscounts();
+  const [discounts, setDiscounts] = useState<Discount[] | null>(null);
+  useEffect(() => { fetchDiscounts().then(setDiscounts).catch(() => setDiscounts([])); }, []);
+  if (!discounts) return <div className="p-10 text-brand-400">Cargando…</div>;
   return (
     <div>
       <PageHeader title="Descuentos" subtitle="Cupones y promociones de la tienda" />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { addLead } from "@/lib/clientStore";
+import { addLeadDb } from "@/lib/admin";
 import { site } from "@/data/site";
 import { Heart, Check } from "./icons";
 
@@ -14,9 +14,9 @@ export default function InterestForm() {
     e.preventDefault();
     setLoading(true);
     try {
-      addLead({ ...form, source: "formulario" });
+      await addLeadDb({ ...form, source: "formulario" });
     } catch {
-      /* demo: no romper si falla */
+      /* no romper si falla */
     } finally {
       setDone(true);
       setLoading(false);

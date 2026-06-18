@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getTasks, setTaskStatus, type Task, type TaskStatus } from "@/lib/clientStore";
+import type { Task, TaskStatus } from "@/lib/clientStore";
+import { fetchTasks, updateTaskStatusDb } from "@/lib/admin";
 import { PageHeader, StatCard, Chips, Badge } from "@/components/admin/ui";
 
 const statusTone: Record<TaskStatus, "amber" | "blue" | "violet" | "emerald"> = {
@@ -30,12 +31,15 @@ export default function TareasPage() {
   const [tasks, setTasks] = useState<Task[] | null>(null);
   const [filter, setFilter] = useState<FilterKey>("todas");
 
-  useEffect(() => setTasks(getTasks()), []);
+  useEffect(() => { fetchTasks().then(setTasks).catch(() => setTasks([])); }, []);
 
   if (!tasks) return <div className="p-10 text-brand-400">Cargando…</div>;
 
   const visible = filter === "todas" ? tasks : tasks.filter((t) => t.status === filter);
-  const update = (id: string, status: TaskStatus) => setTasks(setTaskStatus(id, status));
+  const update = (id: string, status: TaskStatus) => {
+    setTasks((prev) => (prev ? prev.map((t) => (t.id === id ? { ...t, status } : t)) : prev));
+    updateTaskStatusDb(id, status);
+  };
   const toggle = (t: Task) => update(t.id, t.status === "completada" ? "pendiente" : "completada");
   const count = (s: TaskStatus) => tasks.filter((t) => t.status === s).length;
 

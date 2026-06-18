@@ -1,8 +1,14 @@
-import { getEmployees } from "@/lib/clientStore";
+"use client";
+
+import { useEffect, useState } from "react";
+import { fetchEmployees } from "@/lib/admin";
+import type { Employee } from "@/lib/clientStore";
 import { PageHeader, StatCard, TableWrap, Th, Badge } from "@/components/admin/ui";
 
 export default function EmpleadosPage() {
-  const emps = getEmployees();
+  const [emps, setEmps] = useState<Employee[] | null>(null);
+  useEffect(() => { fetchEmployees().then(setEmps).catch(() => setEmps([])); }, []);
+  if (!emps) return <div className="p-10 text-brand-400">Cargando…</div>;
   const active = emps.filter((e) => e.status === "activo").length;
   return (
     <div>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getDashboard, getSales, getLeads, type Lead, type Sale } from "@/lib/clientStore";
+import type { Lead, Sale } from "@/lib/clientStore";
+import { fetchDashboard } from "@/lib/admin";
 import { formatCOP } from "@/data/site";
 import { PageHeader, StatCard, BarChart } from "@/components/admin/ui";
 
@@ -13,7 +14,7 @@ const leadStatusStyles: Record<string, string> = {
   perdido: "bg-rose-100 text-rose-700",
 };
 
-type Data = ReturnType<typeof getDashboard>;
+type Data = Awaited<ReturnType<typeof fetchDashboard>>;
 
 export default function Dashboard() {
   const [d, setD] = useState<Data | null>(null);
@@ -21,9 +22,11 @@ export default function Dashboard() {
   const [leads, setLeads] = useState<Lead[]>([]);
 
   useEffect(() => {
-    setD(getDashboard());
-    setSales(getSales().slice(0, 5));
-    setLeads(getLeads().slice(0, 5));
+    fetchDashboard().then((data) => {
+      setD(data);
+      setSales(data.sales.slice(0, 5));
+      setLeads(data.leads.slice(0, 5));
+    }).catch(() => {});
   }, []);
 
   if (!d) return <div className="p-10 text-brand-400">Cargando…</div>;
