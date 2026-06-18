@@ -46,7 +46,7 @@ export default function Sidebar() {
         </span>
         <div className="leading-tight">
           <p className="text-xs uppercase tracking-wider text-brand-400">Panel Admin</p>
-          <p className="font-serif text-base font-bold text-brand-900">{site.tagline}</p>
+          <p className="font-serif text-base font-bold text-brand-900">{site.shortName}</p>
         </div>
       </div>
 

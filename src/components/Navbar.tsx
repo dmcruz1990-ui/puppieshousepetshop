@@ -35,9 +35,6 @@ export default function Navbar() {
             <BrandLogo size={44} />
             <span className="min-w-0 leading-tight">
               <span className="block truncate font-serif text-base sm:text-lg font-bold text-brand-900">{site.name}</span>
-              <span className="block truncate text-[10px] sm:text-[11px] tracking-wider uppercase text-brand-500">
-                {site.tagline}
-              </span>
             </span>
           </Link>
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">

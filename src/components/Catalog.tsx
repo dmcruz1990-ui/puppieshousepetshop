@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { categories, type Product, type Size } from "@/data/products";
+import { type Product } from "@/data/products";
 import { fetchCatalog } from "@/lib/catalog";
 import { getSettings } from "@/lib/settings";
 import ProductCard from "./ProductCard";
@@ -17,7 +17,6 @@ const sortLabels: Record<SortKey, string> = {
 
 export default function Catalog({ products: initial }: { products: Product[] }) {
   const [products, setProducts] = useState<Product[]>(initial);
-  const [cat, setCat] = useState<Size | "todos">("todos");
   const [sort, setSort] = useState<SortKey>("destacados");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [boldLink, setBoldLink] = useState("");
@@ -29,7 +28,7 @@ export default function Catalog({ products: initial }: { products: Product[] }) 
   }, []);
 
   const filtered = useMemo(() => {
-    let list = products.filter((p) => (cat === "todos" ? true : p.size === cat));
+    let list = [...products];
     if (sort === "precio-asc") list = [...list].sort((a, b) => a.price - b.price);
     else if (sort === "precio-desc") list = [...list].sort((a, b) => b.price - a.price);
     else
@@ -40,29 +39,12 @@ export default function Catalog({ products: initial }: { products: Product[] }) 
     return [...list].sort(
       (a, b) => Number(a.status === "vendido") - Number(b.status === "vendido"),
     );
-  }, [products, cat, sort]);
+  }, [products, sort]);
 
   return (
     <section id="catalogo" className="mx-auto max-w-7xl px-4 py-12">
-      {/* categorías */}
-      <div className="flex flex-wrap gap-2.5">
-        {categories.map((c) => (
-          <button
-            key={c.key}
-            onClick={() => setCat(c.key)}
-            className={`rounded-full border px-5 py-2.5 text-sm font-medium transition ${
-              cat === c.key
-                ? "border-accent-500 bg-accent-500 text-white"
-                : "border-brand-200 bg-white text-brand-700 hover:border-brand-400"
-            }`}
-          >
-            {c.label}
-          </button>
-        ))}
-      </div>
-
       {/* controles */}
-      <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <label className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white px-4 py-2.5 text-sm text-brand-700">
           <Filter className="w-4 h-4 text-brand-500" />
           <select
