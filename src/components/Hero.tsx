@@ -26,8 +26,7 @@ export default function Hero() {
             </h1>
             <p className="mx-auto mt-4 max-w-xl text-base sm:text-lg text-brand-700 text-balance lg:mx-0">
               Cachorros de raza pura, sanos y criados con amor. Especialistas en{" "}
-              <span className="font-semibold text-brand-900">Bulldog Francés</span> y{" "}
-              <span className="font-semibold text-brand-900">Teckel/Dachshund</span>. ¡Encuentra tu compañero ideal!
+              <span className="font-semibold text-brand-900">Bulldog Francés, Teckel/Dachshund, Caniche, Cockapoo, Pomerania y American Bully Pocket</span>. ¡Encuentra tu compañero ideal!
             </p>
             <div className="mt-5 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
               <a
